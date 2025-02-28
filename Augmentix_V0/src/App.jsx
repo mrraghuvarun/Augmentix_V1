@@ -2,24 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/Chat';
 import { Navbar } from './components/Navbar';
-import { Login } from './components/Login';
-
-// API base URL constant
-const API_BASE_URL = 'https://rgfclyl32c.execute-api.us-west-2.amazonaws.com/dev';
+import { Login } from './components/Login'; // Import the Login component
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for login status
 
+  // Get new chat session when component mounts or when login status changes
   useEffect(() => {
     console.log('Current Chat ID changed:', currentChatId);
-    if (currentChatId === null && isLoggedIn) {
+    console.log('Trace:', new Error().stack);
+    if (currentChatId === null && isLoggedIn) { // Only create a new chat if logged in
       console.log('Attempting to create new chat');
       createNewChat();
     } else if (isLoggedIn && currentChatId) {
+      // Load chat history when currentChatId changes
       console.log('Loading chat history for current chat ID');
       loadChatHistory(currentChatId);
     }
@@ -27,7 +27,7 @@ function App() {
 
   const createNewChat = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/chat/new`, {
+      const response = await fetch('/api/chat/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,10 +54,11 @@ function App() {
 
     const sessionId = currentChatId || (await createNewChat());
 
+    // Set loading state to true before API call
     setIsLoading(true);
   
     try {
-      const response = await fetch(`${API_BASE_URL}/api/chat`, {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,6 +92,7 @@ function App() {
         content: 'Sorry, there was an error processing your request.'
       }]);
     } finally {
+      // Set loading state to false after response or error
       setIsLoading(false);
     }
   };
@@ -102,7 +104,7 @@ function App() {
     });
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/files/upload`, {
+      const response = await fetch('/api/files/upload', {
         method: 'POST',
         body: formData,
       });
@@ -126,7 +128,7 @@ function App() {
   const loadChatHistory = async (chatId) => {
     console.log('Loading chat history for chatId:', chatId);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/chat/load/${chatId}`);
+      const response = await fetch(`/api/chat/load/${chatId}`);
       const data = await response.json();
       
       if (data.error) {
@@ -140,13 +142,18 @@ function App() {
     }
   };
 
+  // Handle login - updated to match Login component credentials
   const handleLogin = (username, password) => {
+    // Using the credentials from the Login component
     if (username === "augmentix" && password === "Augmentix@1") {
       setIsLoggedIn(true);
+      // Create a new chat session when logging in
       createNewChat();
     }
+    // No need for an alert here since the Login component handles error display
   };
 
+  // Handle logout
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentChatId(null);
@@ -157,13 +164,17 @@ function App() {
   return (
     <div className="flex flex-col h-screen">
       {!isLoggedIn ? (
+        // Show login page if not logged in
         <Login onLogin={handleLogin} />
       ) : (
+        // Show main app if logged in
         <>
+          {/* Navbar */}
           <div className="flex-none">
             <Navbar onLogout={handleLogout} />
           </div>
           
+          {/* Main content */}
           <div className="flex flex-1 overflow-hidden">
             <Sidebar
               onFileUpload={handleFileUpload}
