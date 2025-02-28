@@ -27,7 +27,7 @@ function App() {
 
   const createNewChat = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/chat/new`, {
+      const response = await fetch(`${API_BASE_URL}/api/chat/new`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ function App() {
     setIsLoading(true);
   
     try {
-      const response = await fetch(`${API_BASE_URL}/chat`, {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ function App() {
     });
 
     try {
-      const response = await fetch(`${API_BASE_URL}/files/upload`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -126,7 +126,7 @@ function App() {
   const loadChatHistory = async (chatId) => {
     console.log('Loading chat history for chatId:', chatId);
     try {
-      const response = await fetch(`${API_BASE_URL}/chat/load/${chatId}`);
+      const response = await fetch(`${API_BASE_URL}/api/chat/load/${chatId}`);
       const data = await response.json();
       
       if (data.error) {
