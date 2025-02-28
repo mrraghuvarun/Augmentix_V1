@@ -10,7 +10,7 @@ export default defineConfig({
     // Otherwise, remove it if you're using direct API_BASE_URL
     proxy: {
       '/api': {
-        target: 'https://rgfclyl32c.execute-api.us-west-2.amazonaws.com/dev',
+        target: 'https://rgfclyl32c.execute-api.us-west-2.amazonaws.com/dev/',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         secure: false,
