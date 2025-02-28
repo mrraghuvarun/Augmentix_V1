@@ -27,7 +27,7 @@ function App() {
 
   const createNewChat = async () => {
     try {
-      const response = await fetch('/api/chat/new', {
+      const response = await fetch('https://rgfclyl32c.execute-api.us-west-2.amazonaws.com/dev/chat/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ function App() {
     setIsLoading(true);
   
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('https://rgfclyl32c.execute-api.us-west-2.amazonaws.com/dev/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ function App() {
     });
 
     try {
-      const response = await fetch('/api/files/upload', {
+      const response = await fetch('https://rgfclyl32c.execute-api.us-west-2.amazonaws.com/dev/files/upload', {
         method: 'POST',
         body: formData,
       });
@@ -128,7 +128,7 @@ function App() {
   const loadChatHistory = async (chatId) => {
     console.log('Loading chat history for chatId:', chatId);
     try {
-      const response = await fetch(`/api/chat/load/${chatId}`);
+      const response = await fetch(`https://rgfclyl32c.execute-api.us-west-2.amazonaws.com/dev/chat/load/${chatId}`);
       const data = await response.json();
       
       if (data.error) {
