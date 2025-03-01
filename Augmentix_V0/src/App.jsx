@@ -4,6 +4,9 @@ import { ChatArea } from './components/Chat';
 import { Navbar } from './components/Navbar';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL; // Use environment variable
+useEffect(() => {
+  console.log("API Base URL:", import.meta.env.VITE_API_URL);
+}, []);
 
 function App() {
   const [messages, setMessages] = useState([]);
