@@ -2,27 +2,19 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from "@tailwindcss/vite";
 
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:5001',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
   },
-  // Add this to force console logging
   build: {
     rollupOptions: {
       output: {
-        // Preserve console.log in production build
-        compact: false
+        compact: false // Preserve console logs in production if needed
       }
     }
+  },
+  define: {
+    'process.env.API_BASE_URL': JSON.stringify(process.env.API_BASE_URL || 'https://1pdafh6hmf.execute-api.us-west-2.amazonaws.com/dev')
   }
 })
