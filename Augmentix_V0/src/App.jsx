@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/Chat';
 import { Navbar } from './components/Navbar';
@@ -25,17 +26,11 @@ function App() {
 
   const createNewChat = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/chat/new`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const data = await response.json();
-      setCurrentChatId(data.sessionId);
+      const response = await axios.post(`${API_BASE_URL}/api/chat/new`);
+      setCurrentChatId(response.data.sessionId);
       setMessages([]);
       setFiles([]);
-
-      return data.sessionId;
+      return response.data.sessionId;
     } catch (error) {
       console.error('Error creating new chat:', error);
       return null;
@@ -53,22 +48,12 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId: sessionId,
-          messages: [...messages, newMessage],
-        }),
+      const response = await axios.post(`${API_BASE_URL}/api/chat`, {
+        sessionId,
+        messages: [...messages, newMessage],
       });
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-      const data = await response.json();
-
-      if (data.error) throw new Error(data.error);
-
-      setMessages(prev => [...prev, { role: 'assistant', content: data.content }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: response.data.content }]);
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, there was an error processing your request.' }]);
@@ -82,37 +67,24 @@ function App() {
     uploadedFiles.forEach(file => formData.append('files[]', file));
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/files/upload`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-
+      const response = await axios.post(`${API_BASE_URL}/api/files/upload`, formData);
       setFiles(prev => [...prev, ...uploadedFiles]);
       setMessages(prev => [
         ...prev,
         { role: 'user', content: `Uploaded files: ${uploadedFiles.map(f => f.name).join(', ')}` },
-        { role: 'assistant', content: data.message || 'Files uploaded successfully.' }
+        { role: 'assistant', content: response.data.message || 'Files uploaded successfully.' }
       ]);
     } catch (error) {
       console.error('Error uploading files:', error);
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: 'Sorry, there was an error uploading the files.' }
-      ]);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, there was an error uploading the files.' }]);
     }
   };
 
   const loadChatHistory = async (chatId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/chat/load/${chatId}`);
-      const data = await response.json();
-
-      if (data.error) throw new Error(data.error);
-
+      const response = await axios.get(`${API_BASE_URL}/api/chat/load/${chatId}`);
       setCurrentChatId(chatId);
-      setMessages(data.messages);
+      setMessages(response.data.messages);
     } catch (error) {
       console.error('Error loading chat history:', error);
     }
